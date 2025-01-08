@@ -15,13 +15,6 @@
 		// Case-insensitive comparison and trim whitespace
 		isCorrect = userInput.trim().toLowerCase() === word.translation.trim().toLowerCase();
 	}
-
-	// Reset state when word changes
-	$effect(() => {
-		userInput = '';
-		isCorrect = null;
-		attempts = 0;
-	});
 </script>
 
 <Carousel.Item>
