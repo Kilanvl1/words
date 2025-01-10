@@ -15,6 +15,27 @@
       "when": 1736380778581,
       "tag": "0001_fresh_lily_hollister",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1736382170712,
+      "tag": "0002_bored_monster_badoon",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1736383825751,
+      "tag": "0003_groovy_legion",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1736440955150,
+      "tag": "0004_superb_talon",
+      "breakpoints": true
     }
   ]
 }

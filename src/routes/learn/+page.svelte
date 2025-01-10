@@ -21,18 +21,21 @@
 	});
 </script>
 
-<Carousel.Root setApi={(emblaApi) => (api = emblaApi)} class="mx-auto w-full max-w-sm">
-	<Carousel.Content>
-		{#each data.words as word}
-			<WordCard {word} />
-		{/each}
-	</Carousel.Content>
-	<Carousel.Previous />
-	<Carousel.Next />
-	<div class="py-2 text-center text-sm text-muted-foreground">
-		Slide {current} of {count}
+<div class="flex h-screen flex-col items-center justify-center gap-y-8">
+	<Carousel.Root setApi={(emblaApi) => (api = emblaApi)} class="mx-auto w-full max-w-sm">
+		<Carousel.Content>
+			{#each data.words as word}
+				<WordCard {word} />
+			{/each}
+		</Carousel.Content>
+		<Carousel.Previous />
+		<Carousel.Next />
+		<div class="py-2 text-center text-sm text-muted-foreground">
+			Slide {current} of {count}
+		</div>
+	</Carousel.Root>
+	<div>
+		<a class={buttonVariants({ variant: 'outline' })} href="/">Back to home</a>
+		<Button onclick={() => window.location.reload()}>Reset</Button>
 	</div>
-</Carousel.Root>
-
-<a class={buttonVariants({ variant: 'outline' })} href="/">Back to home</a>
-<Button onclick={() => window.location.reload()}>Reset</Button>
+</div>

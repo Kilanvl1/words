@@ -1,5 +1,5 @@
 import { pgTable, serial, text, integer, boolean } from 'drizzle-orm/pg-core';
-import { type InferSelectModel, type InferInsertModel } from 'drizzle-orm';
+import { type InferSelectModel, type InferInsertModel, sql, SQL } from 'drizzle-orm';
 
 export const user = pgTable('user', {
 	id: serial('id').primaryKey(),

@@ -7,7 +7,7 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
 	return {
-		words: await db.select().from(word)
+		words: (await db.select().from(word)).sort((a, b) => a.id - b.id)
 	};
 };
 
@@ -38,5 +38,19 @@ export const actions = {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		await db.delete(word).where(eq(word.id, Number(id)));
+	},
+	updateStateOfWord: async ({ request }) => {
+		console.log('got here');
+		const data = await request.formData();
+		const id = data.get('id')?.toString();
+		const stateOfWord = data.get('stateOfWord')?.toString() as
+			| 'mastered'
+			| 'learning'
+			| 'refresh_tomorrow';
+		console.log(stateOfWord);
+		await db
+			.update(word)
+			.set({ state_of_word: stateOfWord })
+			.where(eq(word.id, Number(id)));
 	}
 } satisfies Actions;

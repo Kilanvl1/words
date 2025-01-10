@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import Trash from '$lib/components/icons/trash.svelte';
+	import WordList from './word-list.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Input } from '$lib/components/ui/input';
@@ -18,9 +18,7 @@
 		}
 		return async ({ result, update }) => {
 			if (result.type === 'success') {
-				console.log('got here');
 				dialogOpen = false;
-			} else {
 				update();
 			}
 		};
@@ -30,17 +28,11 @@
 <div class="container">
 	<h1 class="text-2xl font-bold">Your words</h1>
 	<hr class="my-2 h-px border-0 bg-gray-200 dark:bg-gray-700" />
-	{#each data.words as word}
-		<div class="flex items-center gap-x-2">
-			<p>{word.word} and {word.translation}</p>
-			<form method="POST" action="?/delete">
-				<input type="hidden" name="id" value={word.id} />
-				<Button variant="ghost" size="icon" type="submit">
-					<Trash />
-				</Button>
-			</form>
-		</div>
-	{/each}
+	<div class="mb-4 flex flex-col gap-y-4">
+		{#each data.words as word}
+			<WordList {word} />
+		{/each}
+	</div>
 	<Dialog.Root bind:open={dialogOpen}>
 		<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Add new word</Dialog.Trigger>
 		<Dialog.Content class="sm:max-w-[425px]">
