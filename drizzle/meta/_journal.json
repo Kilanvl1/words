@@ -1,41 +1,48 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1736213784350,
-      "tag": "0000_hesitant_stranger",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1736380778581,
-      "tag": "0001_fresh_lily_hollister",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1736382170712,
-      "tag": "0002_bored_monster_badoon",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1736383825751,
-      "tag": "0003_groovy_legion",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1736440955150,
-      "tag": "0004_superb_talon",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "postgresql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "7",
+			"when": 1736213784350,
+			"tag": "0000_hesitant_stranger",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1736380778581,
+			"tag": "0001_fresh_lily_hollister",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1736382170712,
+			"tag": "0002_bored_monster_badoon",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1736383825751,
+			"tag": "0003_groovy_legion",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "7",
+			"when": 1736440955150,
+			"tag": "0004_superb_talon",
+			"breakpoints": true
+		},
+		{
+			"idx": 5,
+			"version": "7",
+			"when": 1736530701941,
+			"tag": "0005_flawless_nightcrawler",
+			"breakpoints": true
+		}
+	]
 }

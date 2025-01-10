@@ -4,6 +4,7 @@
 	import type { CarouselAPI } from '$lib/components/ui/carousel/context.js';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import { Button } from '$lib/components/ui/button';
+	import { onMount } from 'svelte';
 
 	let { data } = $props();
 	let api = $state<CarouselAPI>();
@@ -19,13 +20,45 @@
 			});
 		}
 	});
+
+	async function checkAndUpdateWords() {
+		const currentTime = new Date();
+
+		for (const word of data.words) {
+			let scheduledTime = word.scheduledUpdateTime;
+
+			if (scheduledTime) {
+				scheduledTime = new Date(scheduledTime);
+
+				if (currentTime >= scheduledTime) {
+					try {
+						await fetch('/api/updateStateOfWord', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({ wordId: word.id, stateOfWord: 'learning' })
+						});
+					} catch (error) {
+						console.error('Failed to update word:', word.id, error);
+					}
+				}
+			}
+		}
+	}
+
+	onMount(() => {
+		checkAndUpdateWords();
+	});
 </script>
 
 <div class="flex h-screen flex-col items-center justify-center gap-y-8">
 	<Carousel.Root setApi={(emblaApi) => (api = emblaApi)} class="mx-auto w-full max-w-sm">
 		<Carousel.Content>
 			{#each data.words as word}
-				<WordCard {word} />
+				{#if word.state_of_word === 'learning'}
+					<WordCard {word} />
+				{/if}
 			{/each}
 		</Carousel.Content>
 		<Carousel.Previous />

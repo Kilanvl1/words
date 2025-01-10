@@ -1,5 +1,5 @@
-import { pgTable, serial, text, integer, boolean } from 'drizzle-orm/pg-core';
-import { type InferSelectModel, type InferInsertModel, sql, SQL } from 'drizzle-orm';
+import { pgTable, serial, text, integer, boolean, timestamp } from 'drizzle-orm/pg-core';
+import { type InferSelectModel, type InferInsertModel } from 'drizzle-orm';
 
 export const user = pgTable('user', {
 	id: serial('id').primaryKey(),
@@ -14,7 +14,8 @@ export const word = pgTable('word', {
 	three_in_a_row: boolean('three_in_a_row').notNull().default(false),
 	state_of_word: text('state_of_word', { enum: ['learning', 'mastered', 'refresh_tomorrow'] })
 		.notNull()
-		.default('learning')
+		.default('learning'),
+	scheduledUpdateTime: timestamp('scheduled_update_time')
 });
 
 export type Word = InferSelectModel<typeof word>;

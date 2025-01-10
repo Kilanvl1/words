@@ -18,7 +18,6 @@ export const actions = {
 		const theTranslation = data.get('translation')?.toString();
 		// TODO: server side validation
 		if (!theWord || !theTranslation) {
-			console.log('validation failed');
 			return fail(400, {
 				message: 'Please fill in all fields'
 			});
@@ -40,14 +39,12 @@ export const actions = {
 		await db.delete(word).where(eq(word.id, Number(id)));
 	},
 	updateStateOfWord: async ({ request }) => {
-		console.log('got here');
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		const stateOfWord = data.get('stateOfWord')?.toString() as
 			| 'mastered'
 			| 'learning'
 			| 'refresh_tomorrow';
-		console.log(stateOfWord);
 		await db
 			.update(word)
 			.set({ state_of_word: stateOfWord })

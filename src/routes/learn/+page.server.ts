@@ -5,9 +5,7 @@ import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
 	return {
-		words: (await db.select().from(word).where(eq(word.state_of_word, 'learning'))).sort(
-			(a, b) => a.id - b.id
-		)
+		words: (await db.select().from(word)).sort((a, b) => a.id - b.id)
 	};
 };
 
