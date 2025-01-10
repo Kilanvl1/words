@@ -5,6 +5,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
 	let { form, data } = $props();
@@ -51,6 +52,10 @@
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label for="translation" class="text-right">Translation</Label>
 					<Input name="translation" id="translation" placeholder="Hola" class="col-span-3" />
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label for="isVerb" class="text-right">Is Verb</Label>
+					<Checkbox name="isVerb" id="isVerb" class="col-span-3" />
 				</div>
 
 				<Dialog.Footer>

@@ -16,8 +16,9 @@ export const actions = {
 		const data = await request.formData();
 		const theWord = data.get('word')?.toString();
 		const theTranslation = data.get('translation')?.toString();
+		const theIsVerb = data.get('isVerb') === 'on';
 		// TODO: server side validation
-		if (!theWord || !theTranslation) {
+		if (!theWord || !theTranslation || !theIsVerb) {
 			return fail(400, {
 				message: 'Please fill in all fields'
 			});
@@ -25,7 +26,8 @@ export const actions = {
 
 		await db.insert(word).values({
 			word: theWord,
-			translation: theTranslation
+			translation: theTranslation,
+			isVerb: theIsVerb
 		});
 
 		return {
