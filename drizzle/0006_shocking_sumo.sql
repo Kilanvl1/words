@@ -1,0 +1,1 @@
+ALTER TABLE "word" ADD COLUMN "is_verb" boolean DEFAULT false NOT NULL;
