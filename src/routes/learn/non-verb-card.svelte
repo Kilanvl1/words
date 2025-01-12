@@ -9,14 +9,14 @@
 	import type { SubmitFunction } from '@sveltejs/kit';
 
 	let { word }: { word: Word } = $props();
-	let userInput = $state('');
+	let userTranslation = $state('');
 	let isCorrect = $state<boolean | null>(null);
 	let attempts = $state(0);
 
 	const handleSubmit: SubmitFunction = ({ cancel }) => {
 		attempts++;
 		// Case-insensitive comparison and trim whitespace
-		isCorrect = userInput.trim().toLowerCase() === word.translation.trim().toLowerCase();
+		isCorrect = userTranslation.trim().toLowerCase() === word.translation.trim().toLowerCase();
 		if (!isCorrect) {
 			cancel();
 		}
@@ -33,12 +33,12 @@
 			<div class="text-2xl font-bold">{word.word}</div>
 
 			<div class="w-full max-w-sm space-y-4">
-				<form method="POST" action="?/incrementConsecutive" use:enhance={handleSubmit}>
+				<form method="POST" action="?/handleNonVerbSubmit" use:enhance={handleSubmit}>
 					<Input type="hidden" name="wordId" value={word.id} />
 					<Input
-						bind:value={userInput}
+						bind:value={userTranslation}
 						placeholder="Enter translation"
-						name="userInput"
+						name="userTranslation"
 						class="mb-4"
 					/>
 

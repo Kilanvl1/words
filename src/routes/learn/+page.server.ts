@@ -1,22 +1,27 @@
 import { db } from '$lib/server/db';
-import { word } from '$lib/server/db/schema';
+import { verbConjugation, word } from '$lib/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from './$types';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async () => {
 	return {
-		words: (await db.select().from(word)).sort((a, b) => a.id - b.id)
+		words: (
+			await db
+				.select()
+				.from(word)
+				.leftJoin(verbConjugation, eq(word.verbConjugationId, verbConjugation.id))
+		).sort((a, b) => a.word.id - b.word.id)
 	};
 };
 
 export const actions = {
-	incrementConsecutive: async ({ request }) => {
+	handleNonVerbSubmit: async ({ request }) => {
 		const data = await request.formData();
 		const wordId = data.get('wordId')?.toString();
-		const userInput = data.get('userInput')?.toString();
+		const userTranslation = data.get('userTranslation')?.toString();
 
-		if (!wordId || !userInput) {
-			return { success: false, error: 'Missing wordId or userInput' };
+		if (!wordId || !userTranslation) {
+			return { success: false, error: 'Missing wordId or userTranslation' };
 		}
 
 		const wordFromDb = await db
@@ -24,7 +29,7 @@ export const actions = {
 			.from(word)
 			.where(eq(word.id, Number(wordId)));
 
-		if (wordFromDb[0].translation.trim().toLowerCase() === userInput.trim().toLowerCase()) {
+		if (wordFromDb[0].translation.trim().toLowerCase() === userTranslation.trim().toLowerCase()) {
 			await db
 				.update(word)
 				.set({
@@ -33,6 +38,27 @@ export const actions = {
 				})
 				.where(eq(word.id, Number(wordId)));
 		}
+
+		return { success: true };
+	},
+	handleVerbSubmit: async ({ request }) => {
+		const data = await request.formData();
+		const wordId = data.get('wordId')?.toString();
+		const userTranslation = data.get('userTranslation')?.toString();
+		const userEu = data.get('userEu')?.toString();
+		const userVoce = data.get('userVoce')?.toString();
+		const userEle = data.get('userEle')?.toString();
+		const userNos = data.get('userNos')?.toString();
+		const userVos = data.get('userVos')?.toString();
+		const userEles = data.get('userEles')?.toString();
+		console.log(wordId);
+		await db
+			.update(word)
+			.set({
+				consecutive_correct: sql`consecutive_correct + 1`,
+				three_in_a_row: sql`consecutive_correct + 1 >= 3`
+			})
+			.where(eq(word.id, Number(wordId)));
 
 		return { success: true };
 	},

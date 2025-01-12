@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Carousel from '$lib/components/ui/carousel';
-	import WordCard from './word-card.svelte';
+	import NonVerbCard from './non-verb-card.svelte';
+	import VerbCard from './verb-card.svelte';
 	import type { CarouselAPI } from '$lib/components/ui/carousel/context.js';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import { Button } from '$lib/components/ui/button';
@@ -25,7 +26,7 @@
 		const currentTime = new Date();
 
 		for (const word of data.words) {
-			let scheduledTime = word.scheduledUpdateTime;
+			let scheduledTime = word.word.scheduledUpdateTime;
 
 			if (scheduledTime) {
 				scheduledTime = new Date(scheduledTime);
@@ -37,10 +38,10 @@
 							headers: {
 								'Content-Type': 'application/json'
 							},
-							body: JSON.stringify({ wordId: word.id, stateOfWord: 'learning' })
+							body: JSON.stringify({ wordId: word.word.id, stateOfWord: 'learning' })
 						});
 					} catch (error) {
-						console.error('Failed to update word:', word.id, error);
+						console.error('Failed to update word:', word.word.id, error);
 					}
 				}
 			}
@@ -56,8 +57,12 @@
 	<Carousel.Root setApi={(emblaApi) => (api = emblaApi)} class="mx-auto w-full max-w-sm">
 		<Carousel.Content>
 			{#each data.words as word}
-				{#if word.state_of_word === 'learning'}
-					<WordCard {word} />
+				{#if word.word.state_of_word === 'learning'}
+					{#if word.word.isVerb}
+						<VerbCard {word} />
+					{:else}
+						<NonVerbCard word={word.word} />
+					{/if}
 				{/if}
 			{/each}
 		</Carousel.Content>

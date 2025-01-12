@@ -11,6 +11,7 @@
 	let { form, data } = $props();
 	let dialogOpen = $state(false);
 	let clientErrorMessage = $state('');
+	let isVerb = $state(false);
 
 	const handleSubmit: SubmitFunction = ({ formData, cancel }) => {
 		if (!formData.get('word') || !formData.get('translation')) {
@@ -25,6 +26,8 @@
 		};
 	};
 </script>
+
+{console.log(isVerb)}
 
 <div class="container">
 	<h1 class="text-2xl font-bold">Your words</h1>
@@ -55,8 +58,34 @@
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label for="isVerb" class="text-right">Is Verb</Label>
-					<Checkbox name="isVerb" id="isVerb" class="col-span-3" />
+					<Checkbox name="isVerb" id="isVerb" class="col-span-3" bind:checked={isVerb} />
 				</div>
+				{#if isVerb}
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="eu" class="text-right">Eu</Label>
+						<Input name="eu" id="eu" placeholder="Eu conjugated" class="col-span-3" />
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="voce" class="text-right">Voce</Label>
+						<Input name="voce" id="voce" placeholder="Voce conjugated" class="col-span-3" />
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="ele" class="text-right">Ele</Label>
+						<Input name="ele" id="ele" placeholder="Ele conjugated" class="col-span-3" />
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="nos" class="text-right">Nos</Label>
+						<Input name="nos" id="nos" placeholder="Nos conjugated" class="col-span-3" />
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="vos" class="text-right">Vos</Label>
+						<Input name="vos" id="vos" placeholder="Vos conjugated" class="col-span-3" />
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="eles" class="text-right">Eles</Label>
+						<Input name="eles" id="eles" placeholder="Eles conjugated" class="col-span-3" />
+					</div>
+				{/if}
 
 				<Dialog.Footer>
 					<Button type="submit">Add new word</Button>
