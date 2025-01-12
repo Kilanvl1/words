@@ -9,7 +9,7 @@ export const load: PageServerLoad = async () => {
 			await db
 				.select()
 				.from(word)
-				.leftJoin(verbConjugation, eq(word.verbConjugationId, verbConjugation.id))
+				.leftJoin(verbConjugation, eq(word.verb_conjugation_id, verbConjugation.id))
 		).sort((a, b) => a.word.id - b.word.id)
 	};
 };

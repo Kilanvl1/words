@@ -45,14 +45,14 @@ export const actions = {
 			await db.insert(word).values({
 				word: theWord,
 				translation: theTranslation,
-				isVerb: theIsVerb,
-				verbConjugationId: conjugation[0].id
+				is_verb: theIsVerb,
+				verb_conjugation_id: conjugation[0].id
 			});
 		} else {
 			await db.insert(word).values({
 				word: theWord,
 				translation: theTranslation,
-				isVerb: theIsVerb
+				is_verb: theIsVerb
 			});
 		}
 

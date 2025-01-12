@@ -15,9 +15,9 @@ export const word = pgTable('word', {
 	state_of_word: text('state_of_word', { enum: ['learning', 'mastered', 'refresh_tomorrow'] })
 		.notNull()
 		.default('learning'),
-	scheduledUpdateTime: timestamp('scheduled_update_time'),
-	isVerb: boolean('is_verb').notNull().default(false),
-	verbConjugationId: integer('verb_conjugation_id').references(() => verbConjugation.id)
+	scheduled_update_time: timestamp('scheduled_update_time'),
+	is_verb: boolean('is_verb').notNull().default(false),
+	verb_conjugation_id: integer('verb_conjugation_id').references(() => verbConjugation.id)
 });
 
 export const verbConjugation = pgTable('verb_conjugation', {
