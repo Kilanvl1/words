@@ -26,7 +26,7 @@
 		const currentTime = new Date();
 
 		for (const word of data.words) {
-			let scheduledTime = word.word.scheduledUpdateTime;
+			let scheduledTime = word.word.scheduled_update_time;
 
 			if (scheduledTime) {
 				scheduledTime = new Date(scheduledTime);
@@ -58,7 +58,7 @@
 		<Carousel.Content>
 			{#each data.words as word}
 				{#if word.word.state_of_word === 'learning'}
-					{#if word.word.isVerb}
+					{#if word.word.is_verb}
 						<VerbCard {word} />
 					{:else}
 						<NonVerbCard word={word.word} />
