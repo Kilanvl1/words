@@ -71,7 +71,7 @@
 </script>
 
 <div class={`min-h-screen ${colorArray[currentWordIndex % colorArray.length]}`}>
-	<div class="m-auto flex min-h-[844px] max-w-96 flex-col justify-center p-4">
+	<div class="m-auto flex min-h-[600px] max-w-96 flex-col justify-center p-4">
 		<div class="flex gap-x-2">
 			<a class={buttonVariants({ variant: 'circle' })} href="/"><ChevronLeft /></a>
 			<Button class={buttonVariants({ variant: 'circle' })} onclick={() => window.location.reload()}
