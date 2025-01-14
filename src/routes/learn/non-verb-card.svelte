@@ -1,22 +1,26 @@
 <script lang="ts">
-	import * as Carousel from '$lib/components/ui/carousel';
-	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import type { Word } from '$lib/server/db/schema.js';
 	import { fly } from 'svelte/transition';
-	import { Ellipsis } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { buttonVariants } from '$lib/components/ui/button';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
 	let { word }: { word: Word } = $props();
-	let userTranslation = $state('');
+
 	let isCorrect = $state<boolean | null>(null);
 	let attempts = $state(0);
+	let userTranslation = $state('');
 
-	const handleSubmit: SubmitFunction = ({ cancel }) => {
+	$effect(() => {
+		word; // dependency tracking
+		isCorrect = null;
+		attempts = 0;
+		userTranslation = '';
+	});
+
+	const handleSubmit: SubmitFunction = ({ formData, cancel }) => {
+		const userTranslation = (formData.get('userTranslation') as string) ?? '';
 		attempts++;
 		// Case-insensitive comparison and trim whitespace
 		isCorrect = userTranslation.trim().toLowerCase() === word.translation.trim().toLowerCase();
@@ -30,22 +34,6 @@
 	};
 </script>
 
-<!-- <DropdownMenu.Root>
-				<DropdownMenu.Trigger
-					class={buttonVariants({ variant: 'ghost' }) + 'absolute right-2 top-2'}
-				>
-					<Ellipsis />
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content>
-					<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
-					<DropdownMenu.Separator />
-					<DropdownMenu.Group>
-						<DropdownMenu.Item>
-							<DropdownMenu.Item>Delete</DropdownMenu.Item>
-						</DropdownMenu.Item>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root> -->
 <div class="text-2xl font-bold">{word.word}</div>
 
 <div class="w-full space-y-4">
@@ -85,23 +73,4 @@
 			{/if}
 		</div>
 	{/if}
-
-	<!-- {#if word.three_in_a_row}
-					<div
-						in:fly={{ y: 20, duration: 300 }}
-						class="rounded-md bg-green-100 p-4 text-center text-green-800"
-					>
-						<p>You've got this word correct {word.consecutive_correct} times in a row!</p>
-						<div class="flex justify-between">
-							<form method="POST" action="?/setToMastered">
-								<Input type="hidden" name="wordId" value={word.id} />
-								<Button type="submit">Mastered</Button>
-							</form>
-							<form method="POST" action="?/setToRefreshTomorrow">
-								<Input type="hidden" name="wordId" value={word.id} />
-								<Button type="submit">Refresh tomorrow</Button>
-							</form>
-						</div>
-					</div>
-				{/if} -->
 </div>

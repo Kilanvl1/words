@@ -27,8 +27,6 @@
 	};
 </script>
 
-{console.log(isVerb)}
-
 <div class="container">
 	<h1 class="text-2xl font-bold">Your words</h1>
 	<hr class="my-2 h-px border-0 bg-gray-200 dark:bg-gray-700" />

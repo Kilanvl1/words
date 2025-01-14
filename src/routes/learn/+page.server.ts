@@ -51,7 +51,7 @@ export const actions = {
 		const userNos = data.get('userNos')?.toString();
 		const userVos = data.get('userVos')?.toString();
 		const userEles = data.get('userEles')?.toString();
-		console.log(wordId);
+
 		await db
 			.update(word)
 			.set({

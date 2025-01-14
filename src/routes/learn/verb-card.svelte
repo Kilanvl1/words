@@ -1,6 +1,4 @@
 <script lang="ts">
-	import * as Carousel from '$lib/components/ui/carousel';
-	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 
@@ -36,6 +34,24 @@
 
 	let isCorrect = $state<boolean | null>(null);
 	let attempts = $state(0);
+
+	$effect(() => {
+		word; // dependency tracking
+		isCorrect = null;
+		attempts = 0;
+		userSubmit = {
+			wordData: { id: '', translation: '' },
+			conjugationData: {
+				id: word.word.id,
+				eu: '',
+				voce: '',
+				ele: '',
+				nos: '',
+				vos: '',
+				eles: ''
+			}
+		};
+	});
 
 	const handleSubmit: SubmitFunction = ({ cancel }) => {
 		attempts++;

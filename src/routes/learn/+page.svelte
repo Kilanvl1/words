@@ -6,8 +6,11 @@
 	import { buttonVariants, Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { cn } from '$lib/utils';
+	import { invalidateAll } from '$app/navigation';
+
 	let { data } = $props();
-	let words = $state(data.words.filter((word) => word.word.state_of_word === 'learning'));
+
+	let words = $derived(data.words.filter((word) => word.word.state_of_word === 'learning'));
 	let currentWordIndex = $state(0);
 	let currentWord = $derived(words[currentWordIndex]);
 
@@ -47,6 +50,21 @@
 		}
 	}
 
+	const updateStateOfWord = async (wordId: number, stateOfWord: string) => {
+		try {
+			const response = await fetch('/api/updateStateOfWord', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ wordId, stateOfWord })
+			});
+			if (response.ok) {
+				invalidateAll();
+			}
+		} catch (error) {
+			console.error('Failed to update word:', wordId, error);
+		}
+	};
+
 	onMount(() => {
 		checkAndUpdateWords();
 	});
@@ -66,11 +84,13 @@
 				<DropdownMenu.Content>
 					<DropdownMenu.Group>
 						<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
-						<DropdownMenu.Item>
+						<DropdownMenu.Item onclick={() => updateStateOfWord(currentWord.word.id, 'mastered')}>
 							<Trophy class="mr-2 size-4" />
 							<span>Set to mastered</span>
 						</DropdownMenu.Item>
-						<DropdownMenu.Item>
+						<DropdownMenu.Item
+							onclick={() => updateStateOfWord(currentWord.word.id, 'refresh_tomorrow')}
+						>
 							<RefreshCw class="mr-2 size-4" />
 							<span>Refresh tomorrow</span>
 						</DropdownMenu.Item>
