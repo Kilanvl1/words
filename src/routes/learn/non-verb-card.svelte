@@ -5,6 +5,8 @@
 	import { fly } from 'svelte/transition';
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { buttonVariants } from '$lib/components/ui/button';
+	import { cn } from '$lib/utils';
 
 	let { word }: { word: Word } = $props();
 
@@ -34,7 +36,7 @@
 	};
 </script>
 
-<div class="text-2xl font-bold">{word.word}</div>
+<div class="mb-10 text-center text-2xl font-bold">{word.word}</div>
 
 <div class="w-full space-y-4">
 	<form method="POST" action="?/handleNonVerbSubmit" use:enhance={handleSubmit}>
@@ -43,7 +45,7 @@
 			bind:value={userTranslation}
 			placeholder="Enter translation"
 			name="userTranslation"
-			class="mb-4 "
+			class={cn(buttonVariants({ variant: 'outline' }), 'mb-2')}
 		/>
 
 		<Button

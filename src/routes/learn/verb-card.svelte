@@ -129,7 +129,9 @@
 			{:else}
 				Try again! Attempt {attempts}
 				{#if attempts >= 3}<div class="mt-2 text-sm">
-						Hint: The correct translation is <br />"{word.translation}"
+						Hint: The correct translation is <br />"
+						<p class="font-bold">{word.translation}</p>
+						"
 					</div>
 				{/if}
 			{/if}
