@@ -10,10 +10,10 @@
 	let { title, description, href }: { title: string; description: string; href: string } = $props();
 </script>
 
-<div class="container">
+<div class="container max-w-[500px]">
 	<a {href}>
 		<Card>
-			<CardHeader class="flex flex-col items-center justify-center gap-y-4">
+			<CardHeader class="flex  h-[220px] flex-col items-center justify-center gap-y-4">
 				<CardTitle>{title}</CardTitle>
 				<CardDescription>{description}</CardDescription>
 			</CardHeader>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600">
+  <!-- Define gradient -->
+  <defs>
+    <linearGradient id="grad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#BC5C15" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#4C3423" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Create path for both the line and the fill -->
+  <path
+    d="M 0,600 Q 500,200 1000,600 L 1000,600 L 0,600 Z"
+    fill="url(#grad)"
+    
+  />
+</svg>

@@ -5,7 +5,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import type { Word } from '$lib/server/db/schema.js';
 	import { fly } from 'svelte/transition';
+	import { Ellipsis } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { buttonVariants } from '$lib/components/ui/button';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
 	let { word }: { word: Word } = $props();
@@ -27,50 +30,63 @@
 	};
 </script>
 
-<Carousel.Item>
-	<Card.Root>
-		<Card.Content class="flex aspect-square flex-col items-center justify-center gap-y-4 p-6">
-			<div class="text-2xl font-bold">{word.word}</div>
+<!-- <DropdownMenu.Root>
+				<DropdownMenu.Trigger
+					class={buttonVariants({ variant: 'ghost' }) + 'absolute right-2 top-2'}
+				>
+					<Ellipsis />
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content>
+					<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Group>
+						<DropdownMenu.Item>
+							<DropdownMenu.Item>Delete</DropdownMenu.Item>
+						</DropdownMenu.Item>
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root> -->
+<div class="text-2xl font-bold">{word.word}</div>
 
-			<div class="w-full max-w-sm space-y-4">
-				<form method="POST" action="?/handleNonVerbSubmit" use:enhance={handleSubmit}>
-					<Input type="hidden" name="wordId" value={word.id} />
-					<Input
-						bind:value={userTranslation}
-						placeholder="Enter translation"
-						name="userTranslation"
-						class="mb-4"
-					/>
+<div class="w-full space-y-4">
+	<form method="POST" action="?/handleNonVerbSubmit" use:enhance={handleSubmit}>
+		<Input type="hidden" name="wordId" value={word.id} />
+		<Input
+			bind:value={userTranslation}
+			placeholder="Enter translation"
+			name="userTranslation"
+			class="mb-4 "
+		/>
 
-					<Button
-						type="submit"
-						class="w-full rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
-					>
-						Check
-					</Button>
-				</form>
+		<Button
+			type="submit"
+			class="w-full rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+		>
+			Check
+		</Button>
+	</form>
 
-				{#if isCorrect !== null}
-					<div
-						transition:fly={{ y: 20, duration: 300 }}
-						class={`rounded-md p-4 text-center ${
-							isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-						}`}
-					>
-						{#if isCorrect}
-							Correct! 🎉
-						{:else}
-							Try again! Attempt {attempts}
-							{#if attempts >= 3}
-								<div class="mt-2 text-sm">
-									Hint: The correct translation is "{word.translation}"
-								</div>
-							{/if}
-						{/if}
+	{#if isCorrect !== null}
+		<div
+			transition:fly={{ y: 20, duration: 300 }}
+			class={`rounded-md p-4 text-center ${
+				isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+			}`}
+		>
+			{#if isCorrect}
+				Correct! 🎉
+			{:else}
+				Try again! Attempt {attempts}
+				{#if attempts >= 3}
+					<div class="mt-2 text-sm">
+						Hint: The correct translation is "{word.translation}"
 					</div>
 				{/if}
+			{/if}
+		</div>
+	{/if}
 
-				{#if word.three_in_a_row}
+	<!-- {#if word.three_in_a_row}
 					<div
 						in:fly={{ y: 20, duration: 300 }}
 						class="rounded-md bg-green-100 p-4 text-center text-green-800"
@@ -87,8 +103,5 @@
 							</form>
 						</div>
 					</div>
-				{/if}
-			</div>
-		</Card.Content>
-	</Card.Root>
-</Carousel.Item>
+				{/if} -->
+</div>

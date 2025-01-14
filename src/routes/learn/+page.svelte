@@ -1,26 +1,25 @@
 <script lang="ts">
-	import * as Carousel from '$lib/components/ui/carousel';
 	import NonVerbCard from './non-verb-card.svelte';
 	import VerbCard from './verb-card.svelte';
-	import type { CarouselAPI } from '$lib/components/ui/carousel/context.js';
-	import { buttonVariants } from '$lib/components/ui/button';
-	import { Button } from '$lib/components/ui/button';
+	import { ChevronLeft, RotateCcw, Ellipsis, Trophy, RefreshCw } from 'lucide-svelte';
 	import { onMount } from 'svelte';
-
+	import { buttonVariants, Button } from '$lib/components/ui/button';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import { cn } from '$lib/utils';
 	let { data } = $props();
-	let api = $state<CarouselAPI>();
+	let words = $state(data.words.filter((word) => word.word.state_of_word === 'learning'));
+	let currentWordIndex = $state(0);
+	let currentWord = $derived(words[currentWordIndex]);
 
-	const count = $derived(api ? api.scrollSnapList().length : 0);
-	let current = $state(0);
-
-	$effect(() => {
-		if (api) {
-			current = api.selectedScrollSnap() + 1;
-			api.on('select', () => {
-				current = api!.selectedScrollSnap() + 1;
-			});
-		}
-	});
+	const colorArray = [
+		'bg-[#6F8DE6]',
+		'bg-[#E7C96F]',
+		'bg-[#6FE679]',
+		'bg-[#FFD11C]',
+		'bg-[#E77079]',
+		'bg-[#A570E5]',
+		'bg-[#71E6DA]'
+	];
 
 	async function checkAndUpdateWords() {
 		const currentTime = new Date();
@@ -53,27 +52,53 @@
 	});
 </script>
 
-<div class="flex h-screen flex-col items-center justify-center gap-y-8">
-	<Carousel.Root setApi={(emblaApi) => (api = emblaApi)} class="mx-auto w-full max-w-sm">
-		<Carousel.Content>
-			{#each data.words as word}
-				{#if word.word.state_of_word === 'learning'}
-					{#if word.word.is_verb}
-						<VerbCard {word} />
-					{:else}
-						<NonVerbCard word={word.word} />
-					{/if}
-				{/if}
-			{/each}
-		</Carousel.Content>
-		<Carousel.Previous />
-		<Carousel.Next />
-		<div class="py-2 text-center text-sm text-muted-foreground">
-			Slide {current} of {count}
+<div class={`min-h-screen ${colorArray[currentWordIndex % colorArray.length]}`}>
+	<div class="m-auto flex min-h-[844px] max-w-96 flex-col justify-center p-4">
+		<div class="flex gap-x-2">
+			<a class={buttonVariants({ variant: 'circle' })} href="/"><ChevronLeft /></a>
+			<Button class={buttonVariants({ variant: 'circle' })} onclick={() => window.location.reload()}
+				><RotateCcw /></Button
+			>
+			<DropdownMenu.Root
+				><DropdownMenu.Trigger class={cn(buttonVariants({ variant: 'circle' }), 'ml-auto')}>
+					<Ellipsis /></DropdownMenu.Trigger
+				>
+				<DropdownMenu.Content>
+					<DropdownMenu.Group>
+						<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
+						<DropdownMenu.Item>
+							<Trophy class="mr-2 size-4" />
+							<span>Set to mastered</span>
+						</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							<RefreshCw class="mr-2 size-4" />
+							<span>Refresh tomorrow</span>
+						</DropdownMenu.Item>
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
 		</div>
-	</Carousel.Root>
-	<div>
-		<a class={buttonVariants({ variant: 'outline' })} href="/">Back to home</a>
-		<Button onclick={() => window.location.reload()}>Reset</Button>
+		<div class="mt-auto">
+			<p class="text-sm text-gray-600">{currentWordIndex + 1} / {words.length}</p>
+			{#if currentWord.word.is_verb}
+				<VerbCard word={currentWord} />
+			{:else}
+				<NonVerbCard word={currentWord.word} />
+			{/if}
+		</div>
+		<div class="mt-auto flex w-full justify-between gap-x-4">
+			<Button
+				class={buttonVariants({ variant: 'hollow' })}
+				onclick={() => (currentWordIndex = (currentWordIndex - 1 + words.length) % words.length)}
+			>
+				Prev
+			</Button>
+			<Button
+				class={buttonVariants({ variant: 'hollow' })}
+				onclick={() => (currentWordIndex = (currentWordIndex + 1) % words.length)}
+			>
+				Next
+			</Button>
+		</div>
 	</div>
 </div>
