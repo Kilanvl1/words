@@ -4,6 +4,7 @@
 	import * as Select from '$lib/components/ui/select';
 
 	let { word } = $props();
+
 	let stateOfWord = $state(word.state_of_word);
 
 	const handleValueChange = async () => {

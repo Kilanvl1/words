@@ -10,9 +10,11 @@
 
 	let { data } = $props();
 
-	let words = $derived(data.words.filter((word) => word.word.state_of_word === 'learning'));
+	//let words = $derived(data.words.filter((word) => word.word.state_of_word === 'learning'));
+	let words = $state(data.words);
 	let currentWordIndex = $state(0);
 	let currentWord = $derived(words[currentWordIndex]);
+	let shouldReset = $state(false);
 
 	const colorArray = [
 		'bg-[#6F8DE6]',
@@ -68,6 +70,28 @@
 	onMount(() => {
 		checkAndUpdateWords();
 	});
+
+	const handleIncorrectAnswer = (id: number) => {
+		// Generate a random number between 3 and 8
+		const randomIndex = Math.floor(Math.random() * 6) + 3;
+
+		let isRandomInxedInArray = true;
+		if (randomIndex + currentWordIndex > words.length) {
+			isRandomInxedInArray = false;
+		}
+
+		if (isRandomInxedInArray) {
+			// Move word with id at position id in words to position randomIndex in words
+			const wordToMove = words.find((word) => word.word.id === id) as (typeof words)[number];
+			words.splice(currentWordIndex, 1);
+			words.splice(randomIndex, 0, wordToMove);
+		}
+		toggleReset();
+	};
+
+	const toggleReset = () => {
+		shouldReset = !shouldReset;
+	};
 </script>
 
 <div class={`min-h-screen ${colorArray[currentWordIndex % colorArray.length]}`}>
@@ -101,21 +125,27 @@
 		<div class="mt-auto">
 			<p class="text-sm text-gray-600">{currentWordIndex + 1} / {words.length}</p>
 			{#if currentWord.word.is_verb}
-				<VerbCard word={currentWord} />
+				<VerbCard word={currentWord} {handleIncorrectAnswer} bind:shouldReset />
 			{:else}
-				<NonVerbCard word={currentWord.word} />
+				<NonVerbCard word={currentWord.word} {handleIncorrectAnswer} bind:shouldReset />
 			{/if}
 		</div>
 		<div class="mt-auto flex w-full justify-between gap-x-4">
 			<Button
 				class={buttonVariants({ variant: 'hollow' })}
-				onclick={() => (currentWordIndex = (currentWordIndex - 1 + words.length) % words.length)}
+				onclick={() => {
+					toggleReset();
+					currentWordIndex = (currentWordIndex - 1 + words.length) % words.length;
+				}}
 			>
 				Prev
 			</Button>
 			<Button
 				class={buttonVariants({ variant: 'hollow' })}
-				onclick={() => (currentWordIndex = (currentWordIndex + 1) % words.length)}
+				onclick={() => {
+					toggleReset();
+					currentWordIndex = (currentWordIndex + 1) % words.length;
+				}}
 			>
 				Next
 			</Button>

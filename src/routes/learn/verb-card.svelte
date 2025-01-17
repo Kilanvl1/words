@@ -18,7 +18,7 @@
 		conjugationData: VerbConjugation;
 	};
 
-	let { word } = $props();
+	let { word, handleIncorrectAnswer, shouldReset = $bindable() } = $props();
 	let userSubmit = $state<UserSubmit>({
 		wordData: { id: '', translation: '' },
 		conjugationData: {
@@ -34,9 +34,10 @@
 
 	let isCorrect = $state<boolean | null>(null);
 	let attempts = $state(0);
+	let previousWordId = $state(word.word.word);
 
 	$effect(() => {
-		word; // dependency tracking
+		shouldReset;
 		isCorrect = null;
 		attempts = 0;
 		userSubmit = {
@@ -51,6 +52,7 @@
 				eles: ''
 			}
 		};
+		previousWordId = word.word;
 	});
 
 	const handleSubmit: SubmitFunction = ({ cancel }) => {
@@ -74,6 +76,9 @@
 				word.verb_conjugation.eles.trim().toLowerCase();
 
 		if (!isCorrect) {
+			if (attempts > 1) {
+				handleIncorrectAnswer(word.word.id);
+			}
 			cancel();
 		}
 
@@ -128,10 +133,15 @@
 				Correct! 🎉
 			{:else}
 				Try again! Attempt {attempts}
-				{#if attempts >= 3}<div class="mt-2 text-sm">
-						Hint: The correct translation is <br />"
-						<p class="font-bold">{word.translation}</p>
+				{#if attempts === 1}<div class="mt-2 text-sm">
+						Hint: The first two letters are: <br />"
+						<p class="font-bold">{word.translation.slice(0, 2)}</p>
 						"
+					</div>
+				{/if}
+				{#if attempts > 1}
+					<div class="mt-2 text-sm">
+						Hint: The correct translation is <br />"{word.translation}"
 					</div>
 				{/if}
 			{/if}

@@ -8,14 +8,18 @@
 	import { buttonVariants } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
 
-	let { word }: { word: Word } = $props();
+	let {
+		word,
+		handleIncorrectAnswer,
+		shouldReset = $bindable()
+	}: { word: Word; handleIncorrectAnswer: (id: number) => void; shouldReset: boolean } = $props();
 
 	let isCorrect = $state<boolean | null>(null);
 	let attempts = $state(0);
 	let userTranslation = $state('');
 
 	$effect(() => {
-		word; // dependency tracking
+		shouldReset;
 		isCorrect = null;
 		attempts = 0;
 		userTranslation = '';
@@ -28,6 +32,9 @@
 		isCorrect = userTranslation.trim().toLowerCase() === word.translation.trim().toLowerCase();
 		if (!isCorrect) {
 			cancel();
+		}
+		if (isCorrect && attempts === 3) {
+			handleIncorrectAnswer(word.id);
 		}
 
 		return async ({ update }) => {
@@ -67,7 +74,12 @@
 				Correct! 🎉
 			{:else}
 				Try again! Attempt {attempts}
-				{#if attempts >= 3}
+				{#if attempts === 1}
+					<div class="mt-2 text-sm">
+						Hint: The first two letters are: <br />"{word.translation.slice(0, 2)}"
+					</div>
+				{/if}
+				{#if attempts > 1}
 					<div class="mt-2 text-sm">
 						Hint: The correct translation is <br />"{word.translation}"
 					</div>

@@ -4,11 +4,13 @@ import { eq, sql } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async () => {
+	console.log('loading');
 	return {
 		words: (
 			await db
 				.select()
 				.from(word)
+				.where(eq(word.state_of_word, 'learning'))
 				.leftJoin(verbConjugation, eq(word.verb_conjugation_id, verbConjugation.id))
 		).sort((a, b) => a.word.id - b.word.id)
 	};
