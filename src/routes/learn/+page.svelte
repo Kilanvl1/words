@@ -84,7 +84,7 @@
 			// Move word with id at position id in words to position randomIndex in words
 			const wordToMove = words.find((word) => word.word.id === id) as (typeof words)[number];
 			words.splice(currentWordIndex, 1);
-			words.splice(randomIndex, 0, wordToMove);
+			words.splice(randomIndex + currentWordIndex, 0, wordToMove);
 		}
 		toggleReset();
 	};
