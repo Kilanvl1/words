@@ -135,34 +135,16 @@
 				Try again! Attempt {attempts}
 				{#if attempts === 1}<div class="mt-2 text-sm">
 						Hint: The first two letters are: <br />"
-						<p class="font-bold">{word.translation.slice(0, 2)}</p>
+						<p class="font-bold">{word.word.translation.slice(0, 2)}</p>
 						"
 					</div>
 				{/if}
 				{#if attempts > 1}
 					<div class="mt-2 text-sm">
-						Hint: The correct translation is <br />"{word.translation}"
+						Hint: The correct translation is <br />"{word.word.translation}"
 					</div>
 				{/if}
 			{/if}
-		</div>
-	{/if}
-
-	{#if word.three_in_a_row}<div
-			in:fly={{ y: 20, duration: 300 }}
-			class="rounded-md bg-green-100 p-4 text-center text-green-800"
-		>
-			<p>You've got this word correct {word.consecutive_correct} times in a row!</p>
-			<div class="flex justify-between">
-				<form method="POST" action="?/setToMastered">
-					<Input type="hidden" name="wordId" value={word.id}></Input>
-					<Button type="submit">Mastered</Button>
-				</form>
-				<form method="POST" action="?/setToRefreshTomorrow">
-					<Input type="hidden" name="wordId" value={word.id}></Input>
-					<Button type="submit">Refresh tomorrow</Button>
-				</form>
-			</div>
 		</div>
 	{/if}
 </div>
