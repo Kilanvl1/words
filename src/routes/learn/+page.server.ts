@@ -4,7 +4,6 @@ import { eq, sql } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async () => {
-	console.log('loading');
 	return {
 		words: (
 			await db
