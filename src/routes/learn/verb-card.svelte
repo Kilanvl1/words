@@ -7,6 +7,7 @@
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { cn } from '$lib/utils';
+	import type { InferredType } from '$lib/server/db/actions/words';
 
 	type WordDataForm = {
 		id: string;
@@ -18,23 +19,28 @@
 		conjugationData: VerbConjugation;
 	};
 
-	let { word, handleIncorrectAnswer, shouldReset = $bindable() } = $props();
+	let {
+		word,
+		handleIncorrectAnswer,
+		shouldReset = $bindable()
+	}: {
+		word: InferredType[number];
+		handleIncorrectAnswer: (wordId: number) => void;
+		shouldReset: boolean;
+	} = $props();
 	let userSubmit = $state<UserSubmit>({
 		wordData: { id: '', translation: '' },
 		conjugationData: {
 			id: word.word.id,
 			eu: '',
-			voce: '',
-			ele: '',
+			voceAndEle: '',
 			nos: '',
-			vos: '',
-			eles: ''
+			elesAndVoces: ''
 		}
 	});
 
 	let isCorrect = $state<boolean | null>(null);
 	let attempts = $state(0);
-	let previousWordId = $state(word.word.word);
 
 	$effect(() => {
 		shouldReset;
@@ -45,35 +51,28 @@
 			conjugationData: {
 				id: word.word.id,
 				eu: '',
-				voce: '',
-				ele: '',
+				voceAndEle: '',
 				nos: '',
-				vos: '',
-				eles: ''
+				elesAndVoces: ''
 			}
 		};
-		previousWordId = word.word;
 	});
 
 	const handleSubmit: SubmitFunction = ({ cancel }) => {
 		attempts++;
 		// Case-insensitive comparison and trim whitespace
+		const euConjugation = word.verb_conjugation?.eu.trim().toLowerCase() ?? '';
+		const voceAndEleConjugation = word.verb_conjugation?.voceAndEle.trim().toLowerCase() ?? '';
+		const nosConjugation = word.verb_conjugation?.nos.trim().toLowerCase() ?? '';
+		const elesAndVocesConjugation = word.verb_conjugation?.elesAndVoces.trim().toLowerCase() ?? '';
 
 		isCorrect =
 			userSubmit.wordData.translation.trim().toLowerCase() ===
 				word.word.translation.trim().toLowerCase() &&
-			userSubmit.conjugationData.eu.trim().toLowerCase() ===
-				word.verb_conjugation.eu.trim().toLowerCase() &&
-			userSubmit.conjugationData.voce.trim().toLowerCase() ===
-				word.verb_conjugation.voce.trim().toLowerCase() &&
-			userSubmit.conjugationData.ele.trim().toLowerCase() ===
-				word.verb_conjugation.ele.trim().toLowerCase() &&
-			userSubmit.conjugationData.nos.trim().toLowerCase() ===
-				word.verb_conjugation.nos.trim().toLowerCase() &&
-			userSubmit.conjugationData.vos.trim().toLowerCase() ===
-				word.verb_conjugation.vos.trim().toLowerCase() &&
-			userSubmit.conjugationData.eles.trim().toLowerCase() ===
-				word.verb_conjugation.eles.trim().toLowerCase();
+			userSubmit.conjugationData.eu.trim().toLowerCase() === euConjugation &&
+			userSubmit.conjugationData.voceAndEle.trim().toLowerCase() === voceAndEleConjugation &&
+			userSubmit.conjugationData.nos.trim().toLowerCase() === nosConjugation &&
+			userSubmit.conjugationData.elesAndVoces.trim().toLowerCase() === elesAndVocesConjugation;
 
 		if (!isCorrect) {
 			if (attempts > 1) {
@@ -99,26 +98,25 @@
 			name="userTranslation"
 			class="mb-4"
 		/>
-		<Input bind:value={userSubmit.conjugationData.eu} placeholder="Eu" name="userEu" class="mb-4"
-		></Input>
+		<Input bind:value={userSubmit.conjugationData.eu} placeholder="Eu" name="userEu" class="mb-4" />
 		<Input
-			bind:value={userSubmit.conjugationData.voce}
-			placeholder="Voce"
+			bind:value={userSubmit.conjugationData.voceAndEle}
+			placeholder="Voce/ele"
 			name="userVoce"
 			class="mb-4"
-		></Input>
-		<Input bind:value={userSubmit.conjugationData.ele} placeholder="Ele" name="userEle" class="mb-4"
-		></Input>
-		<Input bind:value={userSubmit.conjugationData.nos} placeholder="Nos" name="userNos" class="mb-4"
-		></Input>
-		<Input bind:value={userSubmit.conjugationData.vos} placeholder="Vos" name="userVos" class="mb-4"
-		></Input>
+		/>
 		<Input
-			bind:value={userSubmit.conjugationData.eles}
-			placeholder="Eles"
+			bind:value={userSubmit.conjugationData.nos}
+			placeholder="Nos"
+			name="userNos"
+			class="mb-4"
+		/>
+		<Input
+			bind:value={userSubmit.conjugationData.elesAndVoces}
+			placeholder="Eles/voces"
 			name="userEles"
 			class="mb-4"
-		></Input>
+		/>
 		<Button type="submit" class={cn(buttonVariants({ variant: 'hollow' }), 'w-full')}>Check</Button>
 	</form>
 
@@ -135,13 +133,13 @@
 				Try again! Attempt {attempts}
 				{#if attempts === 1}<div class="mt-2 text-sm">
 						Hint: The first two letters are: <br />"
-						<p class="font-bold">{word.word.translation.slice(0, 2)}</p>
+						<p class="font-bold">{word.word.word.translation.slice(0, 2)}</p>
 						"
 					</div>
 				{/if}
 				{#if attempts > 1}
 					<div class="mt-2 text-sm">
-						Hint: The correct translation is <br />"{word.word.translation}"
+						Hint: The correct translation is <br />"{word.word.word.translation}"
 					</div>
 				{/if}
 			{/if}

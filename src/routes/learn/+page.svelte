@@ -30,7 +30,7 @@
 		const currentTime = new Date();
 
 		for (const word of data.words) {
-			let scheduledTime = word.word.scheduled_update_time;
+			let scheduledTime = word.word.scheduledUpdateTime;
 
 			if (scheduledTime) {
 				scheduledTime = new Date(scheduledTime);
@@ -124,7 +124,7 @@
 		</div>
 		<div class="mt-auto">
 			<p class="text-sm text-gray-600">{currentWordIndex + 1} / {words.length}</p>
-			{#if currentWord.word.is_verb}
+			{#if currentWord.word.isVerb}
 				<VerbCard word={currentWord} {handleIncorrectAnswer} bind:shouldReset />
 			{:else}
 				<NonVerbCard word={currentWord.word} {handleIncorrectAnswer} bind:shouldReset />

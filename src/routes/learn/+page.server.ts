@@ -1,18 +1,17 @@
 import { db } from '$lib/server/db';
-import { verbConjugation, word } from '$lib/server/db/schema';
+import { wordTable } from '$lib/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from './$types';
+import { redirect } from '@sveltejs/kit';
+import { getWordsFromUserWithConjugation } from '$lib/server/db/actions/words';
 
-export const load: PageServerLoad = async () => {
-	console.log('loading');
+export const load: PageServerLoad = async (event) => {
+	const userId = event.locals.user?.id;
+	if (!userId) {
+		throw redirect(302, '/');
+	}
 	return {
-		words: (
-			await db
-				.select()
-				.from(word)
-				.where(eq(word.state_of_word, 'learning'))
-				.leftJoin(verbConjugation, eq(word.verb_conjugation_id, verbConjugation.id))
-		).sort((a, b) => a.word.id - b.word.id)
+		words: await getWordsFromUserWithConjugation(userId)
 	};
 };
 
@@ -28,17 +27,17 @@ export const actions = {
 
 		const wordFromDb = await db
 			.select()
-			.from(word)
-			.where(eq(word.id, Number(wordId)));
+			.from(wordTable)
+			.where(eq(wordTable.id, Number(wordId)));
 
 		if (wordFromDb[0].translation.trim().toLowerCase() === userTranslation.trim().toLowerCase()) {
 			await db
-				.update(word)
+				.update(wordTable)
 				.set({
-					consecutive_correct: sql`consecutive_correct + 1`,
-					three_in_a_row: sql`consecutive_correct + 1 >= 3`
+					consecutiveCorrect: sql`consecutive_correct + 1`,
+					threeInARow: sql`consecutive_correct + 1 >= 3`
 				})
-				.where(eq(word.id, Number(wordId)));
+				.where(eq(wordTable.id, Number(wordId)));
 		}
 
 		return { success: true };
@@ -48,19 +47,17 @@ export const actions = {
 		const wordId = data.get('wordId')?.toString();
 		const userTranslation = data.get('userTranslation')?.toString();
 		const userEu = data.get('userEu')?.toString();
-		const userVoce = data.get('userVoce')?.toString();
-		const userEle = data.get('userEle')?.toString();
+		const userVoceAndEle = data.get('userVoceAndEle')?.toString();
 		const userNos = data.get('userNos')?.toString();
-		const userVos = data.get('userVos')?.toString();
-		const userEles = data.get('userEles')?.toString();
+		const userElesAndVoces = data.get('userElesAndVoces')?.toString();
 
 		await db
-			.update(word)
+			.update(wordTable)
 			.set({
-				consecutive_correct: sql`consecutive_correct + 1`,
-				three_in_a_row: sql`consecutive_correct + 1 >= 3`
+				consecutiveCorrect: sql`consecutive_correct + 1`,
+				threeInARow: sql`consecutive_correct + 1 >= 3`
 			})
-			.where(eq(word.id, Number(wordId)));
+			.where(eq(wordTable.id, Number(wordId)));
 
 		return { success: true };
 	},
@@ -73,9 +70,9 @@ export const actions = {
 		}
 
 		await db
-			.update(word)
-			.set({ state_of_word: 'mastered' })
-			.where(eq(word.id, Number(wordId)));
+			.update(wordTable)
+			.set({ stateOfWord: 'mastered' })
+			.where(eq(wordTable.id, Number(wordId)));
 	},
 	setToRefreshTomorrow: async ({ request }) => {
 		const data = await request.formData();
@@ -86,8 +83,8 @@ export const actions = {
 		}
 
 		await db
-			.update(word)
-			.set({ state_of_word: 'refresh_tomorrow' })
-			.where(eq(word.id, Number(wordId)));
+			.update(wordTable)
+			.set({ stateOfWord: 'refresh_tomorrow' })
+			.where(eq(wordTable.id, Number(wordId)));
 	}
 } satisfies Actions;

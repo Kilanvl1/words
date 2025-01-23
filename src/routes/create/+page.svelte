@@ -61,27 +61,20 @@
 				{#if isVerb}
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="eu" class="text-right">Eu</Label>
-						<Input name="eu" id="eu" placeholder="Eu conjugated" class="col-span-3" />
+						<Input name="eu" id="eu" class="col-span-3" />
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="voce" class="text-right">Voce</Label>
-						<Input name="voce" id="voce" placeholder="Voce conjugated" class="col-span-3" />
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="ele" class="text-right">Ele</Label>
-						<Input name="ele" id="ele" placeholder="Ele conjugated" class="col-span-3" />
+						<Label for="voceAndEle" class="text-right">Voce/ele</Label>
+						<Input name="voceAndEle" id="voceAndEle" class="col-span-3" />
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="nos" class="text-right">Nos</Label>
-						<Input name="nos" id="nos" placeholder="Nos conjugated" class="col-span-3" />
+						<Input name="nos" id="nos" class="col-span-3" />
 					</div>
+
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="vos" class="text-right">Vos</Label>
-						<Input name="vos" id="vos" placeholder="Vos conjugated" class="col-span-3" />
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="eles" class="text-right">Eles</Label>
-						<Input name="eles" id="eles" placeholder="Eles conjugated" class="col-span-3" />
+						<Label for="elesAndVoces" class="text-right">Eles/voces</Label>
+						<Input name="elesAndVoces" id="elesAndVoces" class="col-span-3" />
 					</div>
 				{/if}
 
