@@ -1,58 +1,67 @@
 import { db } from '$lib/server/db';
-import { verbConjugation, word } from '$lib/server/db/schema';
-import { fail } from '@sveltejs/kit';
+import { verbConjugation, wordTable } from '$lib/server/db/schema';
+import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async (event) => {
+	if (event.locals.user === null) {
+		return redirect(302, '/login');
+	}
 	return {
-		words: (await db.select().from(word)).sort((a, b) => a.id - b.id)
+		words: (
+			await db
+				.select()
+				.from(wordTable)
+				.where(eq(wordTable.userId, Number(event.locals.user.id)))
+		).sort((a, b) => a.id - b.id)
 	};
 };
 
 export const actions = {
-	create: async ({ request }) => {
+	create: async ({ locals, request }) => {
+		if (locals.user === null) {
+			return redirect(302, '/login');
+		}
 		const data = await request.formData();
-		const theWord = data.get('word')?.toString();
-		const theTranslation = data.get('translation')?.toString();
-		const theIsVerb = data.get('isVerb') === 'on';
-		const theEu = data.get('eu')?.toString();
-		const theVoce = data.get('voce')?.toString();
-		const theEle = data.get('ele')?.toString();
-		const theNos = data.get('nos')?.toString();
-		const theVos = data.get('vos')?.toString();
-		const theEles = data.get('eles')?.toString();
+		const word = data.get('word')?.toString();
+		const translation = data.get('translation')?.toString();
+		const isVerb = data.get('isVerb') === 'on';
+		const eu = data.get('eu')?.toString();
+		const voceAndEle = data.get('voceAndEle')?.toString();
+		const nos = data.get('nos')?.toString();
+		const elesAndVoces = data.get('elesAndVoces')?.toString();
 		// TODO: server side validation
-		if (!theWord || !theTranslation) {
+		if (!word || !translation) {
 			return fail(400, {
 				message: 'Please fill in all fields'
 			});
 		}
 
-		if (theIsVerb && theEu && theVoce && theEle && theNos && theVos && theEles) {
+		if (isVerb && eu && voceAndEle && nos && elesAndVoces) {
 			const conjugation = await db
 				.insert(verbConjugation)
 				.values({
-					eu: theEu,
-					voce: theVoce,
-					ele: theEle,
-					nos: theNos,
-					vos: theVos,
-					eles: theEles
+					eu,
+					voceAndEle,
+					nos,
+					elesAndVoces
 				})
 				.returning();
-			await db.insert(word).values({
-				word: theWord,
-				translation: theTranslation,
-				is_verb: theIsVerb,
-				verb_conjugation_id: conjugation[0].id
+			await db.insert(wordTable).values({
+				userId: locals.user.id,
+				word: word,
+				translation: translation,
+				isVerb: isVerb,
+				verbConjugationId: conjugation[0].id
 			});
 		} else {
-			await db.insert(word).values({
-				word: theWord,
-				translation: theTranslation,
-				is_verb: theIsVerb
+			await db.insert(wordTable).values({
+				userId: locals.user.id,
+				word: word,
+				translation: translation,
+				isVerb: isVerb
 			});
 		}
 
@@ -64,7 +73,7 @@ export const actions = {
 	delete: async ({ request }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
-		await db.delete(word).where(eq(word.id, Number(id)));
+		await db.delete(wordTable).where(eq(wordTable.id, Number(id)));
 	},
 	updateStateOfWord: async ({ request }) => {
 		const data = await request.formData();
@@ -74,8 +83,8 @@ export const actions = {
 			| 'learning'
 			| 'refresh_tomorrow';
 		await db
-			.update(word)
-			.set({ state_of_word: stateOfWord })
-			.where(eq(word.id, Number(id)));
+			.update(wordTable)
+			.set({ stateOfWord })
+			.where(eq(wordTable.id, Number(id)));
 	}
 } satisfies Actions;

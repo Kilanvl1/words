@@ -2,10 +2,11 @@
 	import { Button } from '$lib/components/ui/button';
 	import Trash from '$lib/components/icons/trash.svelte';
 	import * as Select from '$lib/components/ui/select';
+	import type { Word } from '$lib/server/db/schema';
 
-	let { word } = $props();
+	let { word }: { word: Word } = $props();
 
-	let stateOfWord = $state(word.state_of_word);
+	let stateOfWord = $state(word.stateOfWord);
 
 	const handleValueChange = async () => {
 		try {

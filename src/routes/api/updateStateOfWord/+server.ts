@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db'; // adjust import path as needed
-import { word } from '$lib/server/db/schema'; // adjust import path as needed
+import { wordTable } from '$lib/server/db/schema'; // adjust import path as needed
 import { eq } from 'drizzle-orm';
 
 export async function POST({ request }) {
@@ -8,11 +8,11 @@ export async function POST({ request }) {
 
 	try {
 		await db
-			.update(word)
+			.update(wordTable)
 			.set({
-				state_of_word: stateOfWord
+				stateOfWord
 			})
-			.where(eq(word.id, wordId));
+			.where(eq(wordTable.id, wordId));
 
 		return json({ success: true });
 	} catch (error) {
