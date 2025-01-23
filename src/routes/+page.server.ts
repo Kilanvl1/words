@@ -1,25 +1,37 @@
 import { redirect } from '@sveltejs/kit';
-import { oauth2Client } from '$lib/server/auth';
-import type { PageServerLoad } from './$types';
+import { google } from '$lib/server/auth';
+import type { PageServerLoad, RequestEvent } from './$types';
+import { generateState, generateCodeVerifier } from 'arctic';
 
 export const load: PageServerLoad = async (event) => {
 	return {
-		authenticated: event.locals?.user?.authenticated
+		user: event.locals.user
 	};
 };
 
 export const actions = {
-	OAuth2: async ({}) => {
-		const authorizeUrl = oauth2Client.generateAuthUrl({
-			access_type: 'offline',
-			scope: ['https://www.googleapis.com/auth/userinfo.profile openid'],
-			prompt: 'consent'
+	OAuth2: async (event: RequestEvent) => {
+		const state = generateState();
+		const codeVerifier = generateCodeVerifier();
+		const url = google.createAuthorizationURL(state, codeVerifier, ['openid', 'profile']);
+
+		event.cookies.set('google_oauth_state', state, {
+			path: '/',
+			httpOnly: true,
+			maxAge: 60 * 10, // 10 minutes
+			sameSite: 'lax'
+		});
+		event.cookies.set('google_code_verifier', codeVerifier, {
+			path: '/',
+			httpOnly: true,
+			maxAge: 60 * 10, // 10 minutes
+			sameSite: 'lax'
 		});
 
-		throw redirect(302, authorizeUrl);
+		return redirect(302, url.toString());
 	},
 	logout: async ({ cookies }) => {
 		cookies.delete('auth_token', { path: '/' });
-		throw redirect(303, '/login');
+		throw redirect(303, '/');
 	}
 };

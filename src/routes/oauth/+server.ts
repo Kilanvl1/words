@@ -1,27 +1,69 @@
-import { redirect } from '@sveltejs/kit';
-import { NODE_ENV } from '$env/static/private';
-import { oauth2Client } from '$lib/server/auth';
+import {
+	generateSessionToken,
+	createSession,
+	setSessionTokenCookie
+} from '$lib/server/db/actions/sessions';
+import { google } from '$lib/server/auth';
+import { decodeIdToken } from 'arctic';
 
-export const GET = async ({ url, cookies }) => {
-	const code = url.searchParams.get('code') ?? '';
+import type { RequestEvent } from '@sveltejs/kit';
+import type { OAuth2Tokens } from 'arctic';
+import { getUserByGoogleId, createUser } from '$lib/server/db/actions/users';
 
-	try {
-		const response = await oauth2Client.getToken(code);
-
-		oauth2Client.setCredentials(response.tokens);
-
-		const user = oauth2Client.credentials;
-
-		console.log('Auth tokens received', user);
-
-		cookies.set('auth_token', JSON.stringify(user), {
-			path: '/',
-			httpOnly: true,
-			secure: NODE_ENV === 'production',
-			maxAge: 60 * 60 * 24 * 7
+export async function GET(event: RequestEvent): Promise<Response> {
+	const code = event.url.searchParams.get('code');
+	const state = event.url.searchParams.get('state');
+	const storedState = event.cookies.get('google_oauth_state') ?? null;
+	const codeVerifier = event.cookies.get('google_code_verifier') ?? null;
+	if (code === null || state === null || storedState === null || codeVerifier === null) {
+		return new Response(null, {
+			status: 400
 		});
-	} catch (error) {
-		console.error('Error logging in with Google', error);
 	}
-	throw redirect(303, '/');
-};
+	if (state !== storedState) {
+		return new Response(null, {
+			status: 400
+		});
+	}
+
+	let tokens: OAuth2Tokens;
+	try {
+		tokens = await google.validateAuthorizationCode(code, codeVerifier);
+	} catch (e) {
+		// Invalid code or client credentials
+		return new Response(null, {
+			status: 400
+		});
+	}
+	const claims = decodeIdToken(tokens.idToken());
+	const googleUserId = claims.sub;
+	const username = claims.name;
+
+	// TODO: Replace this with your own DB query.
+	const existingUser = await getUserByGoogleId(googleUserId);
+
+	if (existingUser !== null) {
+		const sessionToken = generateSessionToken();
+		const session = await createSession(sessionToken, existingUser.id);
+		setSessionTokenCookie(event, sessionToken, session.expiresAt);
+		return new Response(null, {
+			status: 302,
+			headers: {
+				Location: '/'
+			}
+		});
+	}
+
+	// TODO: Replace this with your own DB query.
+	const user = await createUser(googleUserId, username);
+
+	const sessionToken = generateSessionToken();
+	const session = await createSession(sessionToken, user.id);
+	setSessionTokenCookie(event, sessionToken, session.expiresAt);
+	return new Response(null, {
+		status: 302,
+		headers: {
+			Location: '/'
+		}
+	});
+}

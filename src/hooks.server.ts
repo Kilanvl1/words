@@ -1,28 +1,27 @@
 // src/hooks.server.ts
-import { NODE_ENV } from '$env/static/private';
-import { oauth2Client } from '$lib/server/auth';
 import type { Handle } from '@sveltejs/kit';
+import {
+	validateSessionToken,
+	setSessionTokenCookie,
+	deleteSessionTokenCookie
+} from '$lib/server/db/actions/sessions';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const authToken = event.cookies.get('auth_token');
-
-	if (authToken) {
-		const tokens = JSON.parse(authToken);
-		oauth2Client.setCredentials(tokens);
-
-		// Check if token needs refresh
-		if (tokens.expiry_date && Date.now() > tokens.expiry_date) {
-			const { credentials } = await oauth2Client.refreshAccessToken();
-			event.cookies.set('auth_token', JSON.stringify(credentials), {
-				path: '/',
-				httpOnly: true,
-				secure: NODE_ENV === 'production',
-				maxAge: 60 * 60 * 24 * 7
-			});
-		}
-		// Add user info to locals for use in routes
-		event.locals.user = { authenticated: true };
+	const token = event.cookies.get('session') ?? null;
+	if (token === null) {
+		event.locals.user = null;
+		event.locals.session = null;
+		return resolve(event);
 	}
 
+	const { session, user } = await validateSessionToken(token);
+	if (session !== null) {
+		setSessionTokenCookie(event, token, session.expiresAt);
+	} else {
+		deleteSessionTokenCookie(event);
+	}
+
+	event.locals.session = session;
+	event.locals.user = user;
 	return resolve(event);
 };

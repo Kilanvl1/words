@@ -9,7 +9,7 @@
 
 <div class="bg-[#E7C96F]">
 	<div class="container mx-auto flex min-h-screen flex-col items-center justify-center gap-y-4">
-		{#if data.authenticated}
+		{#if data.user}
 			<DropdownMenu.Root
 				><DropdownMenu.Trigger
 					class={cn(buttonVariants({ variant: 'circle' }), 'absolute right-4 top-4')}
