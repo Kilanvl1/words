@@ -1,9 +1,51 @@
 {
-  "id": "365819c2-aa1d-44fb-afce-0c64d7ba8472",
+  "id": "46b7551b-81ff-42c1-bd0c-c2d4291798ed",
   "prevId": "1296fdb2-1ae8-4ce7-92dc-2e078e85c8a4",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_user_id_user_id_fk": {
+          "name": "session_user_id_user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.user": {
       "name": "user",
       "schema": "",
@@ -16,12 +58,6 @@
         },
         "google_id": {
           "name": "google_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "email": {
-          "name": "email",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -43,13 +79,6 @@
           "columns": [
             "google_id"
           ]
-        },
-        "user_email_unique": {
-          "name": "user_email_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
         }
       }
     },
@@ -69,14 +98,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "voce": {
-          "name": "voce",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ele": {
-          "name": "ele",
+        "voce_and_ele": {
+          "name": "voce_and_ele",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -87,14 +110,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "vos": {
-          "name": "vos",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "eles": {
-          "name": "eles",
+        "eles_and_voces": {
+          "name": "eles_and_voces",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -119,7 +136,7 @@
           "name": "user_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "word": {
           "name": "word",

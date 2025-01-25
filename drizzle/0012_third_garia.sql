@@ -1,1 +1,0 @@
-ALTER TABLE "word" ALTER COLUMN "user_id" SET NOT NULL;

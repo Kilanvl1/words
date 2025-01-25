@@ -29,9 +29,7 @@ export type NewSession = InferInsertModel<typeof sessionTable>;
 // Word table
 export const wordTable = pgTable('word', {
 	id: serial('id').primaryKey(),
-	userId: integer('user_id')
-		.references(() => userTable.id)
-		.notNull(),
+	userId: integer('user_id').references(() => userTable.id),
 	word: text('word').notNull(),
 	translation: text('translation').notNull(),
 	consecutiveCorrect: integer('consecutive_correct').notNull().default(0),
