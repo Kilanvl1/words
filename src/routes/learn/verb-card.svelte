@@ -133,13 +133,13 @@
 				Try again! Attempt {attempts}
 				{#if attempts === 1}<div class="mt-2 text-sm">
 						Hint: The first two letters are: <br />"
-						<p class="font-bold">{word.word.word.translation.slice(0, 2)}</p>
+						<p class="font-bold">{word.word.translation.slice(0, 2)}</p>
 						"
 					</div>
 				{/if}
 				{#if attempts > 1}
 					<div class="mt-2 text-sm">
-						Hint: The correct translation is <br />"{word.word.word.translation}"
+						Hint: The correct translation is <br />"{word.word.translation}"
 					</div>
 				{/if}
 			{/if}
