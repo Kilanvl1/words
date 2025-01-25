@@ -75,10 +75,11 @@
 			userSubmit.conjugationData.elesAndVoces.trim().toLowerCase() === elesAndVocesConjugation;
 
 		if (!isCorrect) {
-			if (attempts > 1) {
-				handleIncorrectAnswer(word.word.id);
-			}
 			cancel();
+		}
+
+		if (isCorrect && attempts === 3) {
+			handleIncorrectAnswer(word.word.id);
 		}
 
 		return async ({ update }) => {
@@ -96,26 +97,66 @@
 			bind:value={userSubmit.wordData.translation}
 			placeholder="Enter translation"
 			name="userTranslation"
-			class="mb-4"
+			class={cn(
+				'mb-4',
+				isCorrect !== null &&
+					(userSubmit.wordData.translation.trim().toLowerCase() ===
+					word.word.translation.trim().toLowerCase()
+						? 'border-green-500'
+						: 'border-red-500')
+			)}
 		/>
-		<Input bind:value={userSubmit.conjugationData.eu} placeholder="Eu" name="userEu" class="mb-4" />
+		<Input
+			bind:value={userSubmit.conjugationData.eu}
+			placeholder="Eu"
+			name="userEu"
+			class={cn(
+				'mb-4',
+				isCorrect !== null &&
+					(userSubmit.conjugationData.eu.trim().toLowerCase() ===
+					(word.verb_conjugation?.eu.trim().toLowerCase() ?? '')
+						? 'border-green-500'
+						: 'border-red-500')
+			)}
+		/>
 		<Input
 			bind:value={userSubmit.conjugationData.voceAndEle}
 			placeholder="Voce/ele"
 			name="userVoce"
-			class="mb-4"
+			class={cn(
+				'mb-4',
+				isCorrect !== null &&
+					(userSubmit.conjugationData.voceAndEle.trim().toLowerCase() ===
+					(word.verb_conjugation?.voceAndEle.trim().toLowerCase() ?? '')
+						? 'border-green-500'
+						: 'border-red-500')
+			)}
 		/>
 		<Input
 			bind:value={userSubmit.conjugationData.nos}
 			placeholder="Nos"
 			name="userNos"
-			class="mb-4"
+			class={cn(
+				'mb-4',
+				isCorrect !== null &&
+					(userSubmit.conjugationData.nos.trim().toLowerCase() ===
+					(word.verb_conjugation?.nos.trim().toLowerCase() ?? '')
+						? 'border-green-500'
+						: 'border-red-500')
+			)}
 		/>
 		<Input
 			bind:value={userSubmit.conjugationData.elesAndVoces}
 			placeholder="Eles/voces"
 			name="userEles"
-			class="mb-4"
+			class={cn(
+				'mb-4',
+				isCorrect !== null &&
+					(userSubmit.conjugationData.elesAndVoces.trim().toLowerCase() ===
+					(word.verb_conjugation?.elesAndVoces.trim().toLowerCase() ?? '')
+						? 'border-green-500'
+						: 'border-red-500')
+			)}
 		/>
 		<Button type="submit" class={cn(buttonVariants({ variant: 'hollow' }), 'w-full')}>Check</Button>
 	</form>
@@ -132,14 +173,18 @@
 			{:else}
 				Try again! Attempt {attempts}
 				{#if attempts === 1}<div class="mt-2 text-sm">
-						Hint: The first two letters are: <br />"
-						<p class="font-bold">{word.word.translation.slice(0, 2)}</p>
-						"
+						Hint: The first two letters are: <br />
+						<p class="font-bold">"{word.word.translation.slice(0, 2)}"</p>
 					</div>
 				{/if}
 				{#if attempts > 1}
 					<div class="mt-2 text-sm">
-						Hint: The correct translation is <br />"{word.word.translation}"
+						Hint: The correct translation is <br />
+						<p class="font-bold">"{word.word.translation}"</p>
+						<p class="font-bold">"{word.verb_conjugation?.eu}"</p>
+						<p class="font-bold">"{word.verb_conjugation?.voceAndEle}"</p>
+						<p class="font-bold">"{word.verb_conjugation?.nos}"</p>
+						<p class="font-bold">"{word.verb_conjugation?.elesAndVoces}"</p>
 					</div>
 				{/if}
 			{/if}
