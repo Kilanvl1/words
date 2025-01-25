@@ -42,7 +42,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 	// TODO: Replace this with your own DB query.
 	const existingUser = await getUserByGoogleId(googleUserId);
 
-	if (existingUser !== null) {
+	if (existingUser) {
 		const sessionToken = generateSessionToken();
 		const session = await createSession(sessionToken, existingUser.id);
 		setSessionTokenCookie(event, sessionToken, session.expiresAt);

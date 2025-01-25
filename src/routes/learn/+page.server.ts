@@ -7,6 +7,7 @@ import { getWordsFromUserWithConjugation } from '$lib/server/db/actions/words';
 
 export const load: PageServerLoad = async (event) => {
 	const userId = event.locals.user?.id;
+
 	if (!userId) {
 		throw redirect(302, '/');
 	}
