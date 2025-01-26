@@ -9,7 +9,7 @@
 	{#if href}
 		<a {href}>
 			<Card>
-				<CardHeader class="flex  h-[220px] flex-col items-center justify-center gap-y-4">
+				<CardHeader class="flex  h-[220px] flex-col items-center justify-center gap-y-4 ">
 					<CardTitle>{title}</CardTitle>
 					<CardDescription>{description}</CardDescription>
 				</CardHeader>

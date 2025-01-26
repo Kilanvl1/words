@@ -22,11 +22,13 @@
 	let {
 		word,
 		handleIncorrectAnswer,
-		shouldReset = $bindable()
+		shouldReset = $bindable(),
+		scrollToNextWord = $bindable()
 	}: {
 		word: InferredType[number];
 		handleIncorrectAnswer: (wordId: number) => void;
 		shouldReset: boolean;
+		scrollToNextWord: () => void;
 	} = $props();
 	let userSubmit = $state<UserSubmit>({
 		wordData: { id: '', translation: '' },
@@ -76,10 +78,13 @@
 
 		if (!isCorrect) {
 			cancel();
-		}
-
-		if (isCorrect && attempts === 3) {
-			handleIncorrectAnswer(word.word.id);
+		} else {
+			setTimeout(() => {
+				scrollToNextWord();
+			}, 500);
+			if (attempts > 2) {
+				handleIncorrectAnswer(word.word.id);
+			}
 		}
 
 		return async ({ update }) => {
@@ -105,6 +110,7 @@
 						? 'border-green-500'
 						: 'border-red-500')
 			)}
+			autofocus
 		/>
 		<Input
 			bind:value={userSubmit.conjugationData.eu}

@@ -11,8 +11,14 @@
 	let {
 		word,
 		handleIncorrectAnswer,
-		shouldReset = $bindable()
-	}: { word: Word; handleIncorrectAnswer: (id: number) => void; shouldReset: boolean } = $props();
+		shouldReset = $bindable(),
+		scrollToNextWord = $bindable()
+	}: {
+		word: Word;
+		handleIncorrectAnswer: (id: number) => void;
+		shouldReset: boolean;
+		scrollToNextWord: () => void;
+	} = $props();
 
 	let isCorrect = $state<boolean | null>(null);
 	let attempts = $state(0);
@@ -32,9 +38,13 @@
 		isCorrect = userTranslation.trim().toLowerCase() === word.translation.trim().toLowerCase();
 		if (!isCorrect) {
 			cancel();
-		}
-		if (isCorrect && attempts === 3) {
-			handleIncorrectAnswer(word.id);
+		} else {
+			setTimeout(() => {
+				scrollToNextWord();
+			}, 500);
+			if (attempts > 2) {
+				handleIncorrectAnswer(word.id);
+			}
 		}
 
 		return async ({ update }) => {
@@ -53,6 +63,7 @@
 			placeholder="Enter translation"
 			name="userTranslation"
 			class={cn(buttonVariants({ variant: 'outline' }), 'mb-2')}
+			autofocus
 		/>
 
 		<Button

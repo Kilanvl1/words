@@ -89,6 +89,11 @@
 		toggleReset();
 	};
 
+	const scrollToNextWord = () => {
+		currentWordIndex = (currentWordIndex + 1) % words.length;
+		toggleReset();
+	};
+
 	const toggleReset = () => {
 		shouldReset = !shouldReset;
 	};
@@ -125,9 +130,14 @@
 		<div class="mt-auto">
 			<p class="text-sm text-gray-600">{currentWordIndex + 1} / {words.length}</p>
 			{#if currentWord.word.isVerb}
-				<VerbCard word={currentWord} {handleIncorrectAnswer} bind:shouldReset />
+				<VerbCard word={currentWord} {handleIncorrectAnswer} {scrollToNextWord} bind:shouldReset />
 			{:else}
-				<NonVerbCard word={currentWord.word} {handleIncorrectAnswer} bind:shouldReset />
+				<NonVerbCard
+					word={currentWord.word}
+					{handleIncorrectAnswer}
+					{scrollToNextWord}
+					bind:shouldReset
+				/>
 			{/if}
 		</div>
 		<div class="mt-auto flex w-full justify-between gap-x-4">
